@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: document-processing-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: PYTHONUNBUFFERED
+        value: true
+    autoDeploy: true
+    disk:
+      name: document-storage
+      mountPath: /opt/render/project/src/static
+      sizeGB: 5
+    routes:
+      - type: rewrite
+        source: /static/*
+        destination: /static/*
