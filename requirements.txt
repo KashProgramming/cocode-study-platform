@@ -4,7 +4,7 @@ gunicorn
 google-generativeai
 python-dotenv
 transformers
-torch
+torch-cpu
 pymupdf
 python-docx
 python-pptx
