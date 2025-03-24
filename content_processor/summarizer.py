@@ -1,6 +1,6 @@
 from transformers import pipeline
 from nltk.tokenize import sent_tokenize
-summarizer=pipeline("summarization",model="t5-small",device=-1)
+summarizer=pipeline("summarization",model="t5-small",device=-1,torch_dtype=torch.float16)
 def chunk_text(text,max_words=300):
     sentences=sent_tokenize(text)
     chunks=[]
