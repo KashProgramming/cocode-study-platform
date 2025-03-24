@@ -224,101 +224,101 @@ def upload_files():
     }))
     return response
 
-@app.route('/api/process/<session_id>', methods=['GET'])
-def process_documents(session_id):
-    """
-    Process all documents in a session and generate consolidated outputs
-    """
-    session_dir = os.path.join(app.config['UPLOAD_FOLDER'], session_id)
-    output_dir = os.path.join(app.config['OUTPUT_FOLDER'], 'sessions', session_id)
+# @app.route('/api/process/<session_id>', methods=['POST'])
+# def process_documents(session_id):
+#     """
+#     Process all documents in a session and generate consolidated outputs
+#     """
+#     session_dir = os.path.join(app.config['UPLOAD_FOLDER'], session_id)
+#     output_dir = os.path.join(app.config['OUTPUT_FOLDER'], 'sessions', session_id)
     
-    if not os.path.exists(session_dir):
-        return jsonify({"error": f"Session {session_id} not found"}), 404
+#     if not os.path.exists(session_dir):
+#         return jsonify({"error": f"Session {session_id} not found"}), 404
     
-    all_content = {"text": [], "tables": [], "images": []}
+#     all_content = {"text": [], "tables": [], "images": []}
     
-    # Process each file in the session directory
-    for file_info in sessions[session_id]["files"]:
-        file_path = file_info["path"]
-        filename = file_info["filename"]
+#     # Process each file in the session directory
+#     for file_info in sessions[session_id]["files"]:
+#         file_path = file_info["path"]
+#         filename = file_info["filename"]
         
-        try:
-            if filename.endswith(".pdf"):
-                content = extract_pdf_content(file_path)
-            elif filename.endswith(".docx"):
-                content = extract_docx_content(file_path)
-            elif filename.endswith(".pptx"):
-                content = extract_pptx_content(file_path)
-            else:
-                continue  # Skip unsupported files
+#         try:
+#             if filename.endswith(".pdf"):
+#                 content = extract_pdf_content(file_path)
+#             elif filename.endswith(".docx"):
+#                 content = extract_docx_content(file_path)
+#             elif filename.endswith(".pptx"):
+#                 content = extract_pptx_content(file_path)
+#             else:
+#                 continue  # Skip unsupported files
             
-            # Append extracted content
-            all_content["text"].extend(content["text"])
-            all_content["tables"].extend(content["tables"])
-            all_content["images"].extend(content["images"])
+#             # Append extracted content
+#             all_content["text"].extend(content["text"])
+#             all_content["tables"].extend(content["tables"])
+#             all_content["images"].extend(content["images"])
             
-        except Exception as e:
-            return jsonify({
-                "error": f"Error processing file {filename}",
-                "details": str(e)
-            }), 500
+#         except Exception as e:
+#             return jsonify({
+#                 "error": f"Error processing file {filename}",
+#                 "details": str(e)
+#             }), 500
     
-    if not all_content["text"]:
-        return jsonify({"error": "No content was extracted from the uploaded files"}), 400
+#     if not all_content["text"]:
+#         return jsonify({"error": "No content was extracted from the uploaded files"}), 400
     
-    try:
-        # Summarize the text content
-        all_content["text"] = summarize_content(all_content["text"])
+#     try:
+#         # Summarize the text content
+#         all_content["text"] = summarize_content(all_content["text"])
         
-        # Generate consolidated output files
-        consolidated_doc_path = os.path.join(output_dir, "consolidated_notes.docx")
-        tables_doc_path = os.path.join(output_dir, "consolidated_tables.docx")
+#         # Generate consolidated output files
+#         consolidated_doc_path = os.path.join(output_dir, "consolidated_notes.docx")
+#         tables_doc_path = os.path.join(output_dir, "consolidated_tables.docx")
         
-        export_images_and_text_to_docx(all_content, consolidated_doc_path)
-        export_tables_to_docx(all_content, tables_doc_path)
+#         export_images_and_text_to_docx(all_content, consolidated_doc_path)
+#         export_tables_to_docx(all_content, tables_doc_path)
         
-        return jsonify({
-            "status": "success",
-            "session_id": session_id,
-            "message": "Documents processed successfully",
-            "consolidated_doc": f"/api/download/{session_id}/notes",
-            "tables_doc": f"/api/download/{session_id}/tables"
-        }), 200
+#         return jsonify({
+#             "status": "success",
+#             "session_id": session_id,
+#             "message": "Documents processed successfully",
+#             "consolidated_doc": f"/api/download/{session_id}/notes",
+#             "tables_doc": f"/api/download/{session_id}/tables"
+#         }), 200
         
-    except Exception as e:
-        return jsonify({
-            "error": "Error during document consolidation",
-            "details": str(e)
-        }), 500
+#     except Exception as e:
+#         return jsonify({
+#             "error": "Error during document consolidation",
+#             "details": str(e)
+#         }), 500
 
-@app.route('/api/download/<session_id>/<file_type>', methods=['GET'])
-def download_file(session_id, file_type):
-    """
-    Download the consolidated document or tables document
-    """
-    output_dir = os.path.join(app.config['OUTPUT_FOLDER'], 'sessions', session_id)
+# @app.route('/api/download/<session_id>/<file_type>', methods=['GET'])
+# def download_file(session_id, file_type):
+#     """
+#     Download the consolidated document or tables document
+#     """
+#     output_dir = os.path.join(app.config['OUTPUT_FOLDER'], 'sessions', session_id)
     
-    if not os.path.exists(output_dir):
-        return jsonify({"error": f"Session {session_id} not found"}), 404
+#     if not os.path.exists(output_dir):
+#         return jsonify({"error": f"Session {session_id} not found"}), 404
     
-    if file_type == "notes":
-        file_path = os.path.join(output_dir, "consolidated_notes.docx")
-        file_name = "consolidated_notes.docx"
-    elif file_type == "tables":
-        file_path = os.path.join(output_dir, "consolidated_tables.docx")
-        file_name = "consolidated_tables.docx"
-    else:
-        return jsonify({"error": "Invalid file type requested"}), 400
+#     if file_type == "notes":
+#         file_path = os.path.join(output_dir, "consolidated_notes.docx")
+#         file_name = "consolidated_notes.docx"
+#     elif file_type == "tables":
+#         file_path = os.path.join(output_dir, "consolidated_tables.docx")
+#         file_name = "consolidated_tables.docx"
+#     else:
+#         return jsonify({"error": "Invalid file type requested"}), 400
     
-    if not os.path.exists(file_path):
-        return jsonify({"error": f"Requested file not found"}), 404
+#     if not os.path.exists(file_path):
+#         return jsonify({"error": f"Requested file not found"}), 404
     
-    return send_file(
-        file_path,
-        as_attachment=True,
-        download_name=file_name,
-        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    )
+#     return send_file(
+#         file_path,
+#         as_attachment=True,
+#         download_name=file_name,
+#         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+#     )
 
 @app.route('/api/query', methods=['POST'])
 def query_chatbot():
@@ -498,4 +498,4 @@ def logout():
     return jsonify({"message": "Logged out successfully. All session data and files have been cleared."})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)
