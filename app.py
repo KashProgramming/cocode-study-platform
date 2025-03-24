@@ -498,4 +498,4 @@ def logout():
     return jsonify({"message": "Logged out successfully. All session data and files have been cleared."})
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
