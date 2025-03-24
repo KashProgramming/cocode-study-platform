@@ -12,7 +12,7 @@ pytesseract
 pillow
 camelot-py[cv]
 pandas
-opencv-python
+opencv-python-headless
 glob2
 matplotlib
 nltk
