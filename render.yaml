@@ -2,10 +2,15 @@ services:
   - type: web
     name: document-processing-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
     plan: starter
+    buildCommand: |
+      pip install --no-cache-dir -r requirements.txt  
+    startCommand: |
+      rm -rf /var/log/*  # Free up log space
+      gunicorn app:app --workers 4 --timeout 120  
     healthCheckPath: /api/health
+    autoDeploy: true
+
     envVars:
       - key: GEMINI_API_KEY
         sync: false
@@ -15,11 +20,12 @@ services:
         value: 3.10.0
       - key: PYTHONUNBUFFERED
         value: true
-    autoDeploy: true
+
     disk:
       name: document-storage
       mountPath: /opt/render/project/src/static
-      sizeGB: 5
+      sizeGB: 5  
+
     routes:
       - type: rewrite
         source: /static/*
