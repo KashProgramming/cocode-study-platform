@@ -4,13 +4,13 @@ gunicorn
 google-generativeai
 python-dotenv
 transformers
-torch-cpu
+torch --extra-index-url https://download.pytorch.org/whl/cpu
 pymupdf
 python-docx
 python-pptx
 pytesseract
 pillow
-camelot-py[cv]
+camelot-py
 pandas
 opencv-python-headless
 glob2
